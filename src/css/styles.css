@@ -886,3 +886,7 @@ select:user-valid { border-color: var(--exito); }
   margin-top: var(--espacio-24);
   color: var(--ceniza);
 }
+
+html {
+  color-scheme: dark;
+}
