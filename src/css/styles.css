@@ -881,3 +881,8 @@ select:user-valid { border-color: var(--exito); }
   font-size: 3rem;
   letter-spacing: 1px;
 }
+
+.palmares-vacio {
+  margin-top: var(--espacio-24);
+  color: var(--ceniza);
+}

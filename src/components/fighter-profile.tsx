@@ -1,5 +1,8 @@
 import type { Fighter } from '../types/fighter'
 import { ProfileHero } from './profile-hero'
+import { ProfileSpecs } from './profile-specs'
+import { ProfileStyle } from './profile-style'
+import { ProfileAchievements } from './profile-achievements'
 
 type FighterProfileProps = {
   fighter: Fighter
@@ -17,6 +20,11 @@ export function FighterProfile(props: FighterProfileProps) {
         </button>
       </div>
       <ProfileHero fighter={fighter} />
+
+      <ProfileSpecs fighter={fighter} />
+      <ProfileStyle fighter={fighter} />
+      <ProfileAchievements achievements={fighter.achievements} />
+
     </main>
   )
 }
