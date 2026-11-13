@@ -1,16 +1,13 @@
+import { Link } from 'react-router'
+
 import type { Fighter } from '../types/fighter'
 
 type FighterCardProps = {
   data: Fighter
-  onSelectFighter: (fighterId: number) => void
 }
 
 export function FighterCard(props: FighterCardProps) {
-  const { data, onSelectFighter } = props
-
-  function handleDetailClick() {
-    onSelectFighter(data.id)
-  }
+  const { data } = props
 
   return (
     <li className="tarjeta-peleador">
@@ -24,13 +21,9 @@ export function FighterCard(props: FighterCardProps) {
         </p>
       </div>
       <div className="tarjeta-acciones">
-        <button
-          type="button"
-          className="btn btn-primario"
-          onClick={handleDetailClick}
-        >
+        <Link className="btn btn-primario" to={`/fighters/${data.id}`}>
           Ver detalle
-        </button>
+        </Link>
       </div>
     </li>
   )

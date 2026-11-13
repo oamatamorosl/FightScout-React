@@ -1,30 +1,29 @@
+import { Link } from 'react-router'
+
 import type { Fighter } from '../types/fighter'
+import { ProfileAchievements } from './profile-achievements'
 import { ProfileHero } from './profile-hero'
 import { ProfileSpecs } from './profile-specs'
 import { ProfileStyle } from './profile-style'
-import { ProfileAchievements } from './profile-achievements'
 
 type FighterProfileProps = {
   fighter: Fighter
-  onBack: () => void
 }
 
 export function FighterProfile(props: FighterProfileProps) {
-  const { fighter, onBack } = props
+  const { fighter } = props
 
   return (
-    <main className="perfil">
+    <div className="perfil">
       <div className="perfil-volver">
-        <button type="button" className="btn btn-fantasma" onClick={onBack}>
+        <Link to="/search" className="btn btn-fantasma">
           Volver a resultados
-        </button>
+        </Link>
       </div>
       <ProfileHero fighter={fighter} />
-
       <ProfileSpecs fighter={fighter} />
       <ProfileStyle fighter={fighter} />
       <ProfileAchievements achievements={fighter.achievements} />
-
-    </main>
+    </div>
   )
 }
