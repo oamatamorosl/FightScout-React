@@ -864,3 +864,20 @@ select:user-valid { border-color: var(--exito); }
   color: var(--ceniza);
   font-size: var(--texto-sm);
 }
+
+
+.perfil-volver {
+  margin-bottom: var(--espacio-30);
+}
+
+/* Recuadro con iniciales en lugar de foto (los perfiles son de prueba) */
+.perfil-foto-placeholder {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--carbon);
+  color: var(--hueso);
+  font-family: var(--fuente-titulo);
+  font-size: 3rem;
+  letter-spacing: 1px;
+}
