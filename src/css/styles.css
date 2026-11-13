@@ -1,0 +1,866 @@
+/* =========================================================
+   FightScout · Hoja de estilos única (MOBILE-FIRST)
+   Conectada a: index.html, registro.html, registroScout.html
+   Orden: tokens → base → compartido → landing → formulario → responsive
+
+   ESTRATEGIA MOBILE-FIRST:
+   La base está pensada para MÓVIL (una columna, apilado, compacto).
+   Con @media (min-width: ...) se AÑADE complejidad hacia pantallas grandes.
+   Nunca se usa max-width para "desarmar" desktop: se construye desde abajo.
+   ========================================================= */
+
+/* Los tokens de color viven en css/variables.css, que se carga antes que
+   esta hoja (ver los <link> en el <head> de cada página) — acá ya no hay
+   ningún :root de colores para evitar tener dos fuentes de verdad. */
+
+/* ===== BASE ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--negro);
+  color: var(--hueso);
+  font-family: var(--fuente-cuerpo);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+h1, h2, .marca {
+  font-family: var(--fuente-titulo);
+  text-transform: uppercase;   /* mayúsculas: gritan como un cartel de pelea */
+  letter-spacing: 1px;
+  line-height: 1.05;
+}
+/* h3 con fuente limpia: la condensada se apelmaza en tamaños medianos */
+h3 {
+  font-family: var(--fuente-cuerpo);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+/* ===== ACCESIBILIDAD: skip link y foco visible ===== */
+.skip-link {
+  position: absolute; left: -999px; top: 0;
+  background: var(--sangre); color: var(--hueso);
+  padding: var(--espacio-12) var(--espacio-20); z-index: 100;
+}
+.skip-link:focus { left: 0; }
+
+a:focus-visible, button:focus-visible, .btn:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--sangre);
+  outline-offset: 3px;
+}
+
+/* ===== HEADER STICKY (compartido) · el nav es fixed, así que el header
+   solo necesita alinear marca + hamburguesa en una fila, en cualquier tamaño ===== */
+header {
+  position: sticky; top: 0; z-index: 50;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-12);
+  padding: var(--espacio-14) 6vw;
+  background: rgba(10,10,11,0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--linea);
+}
+.marca { font-size: 1.6rem; color: var(--hueso); text-decoration: none; }
+.marca span { color: var(--sangre); }
+
+/* ===== HAMBURGUESA · visible solo en móvil (se oculta en ≥768px) ===== */
+.nav-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--linea);
+  cursor: pointer;
+  z-index: 61;   /* por encima del drawer, para que se convierta en "X" visible */
+}
+.nav-toggle-barra {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--hueso);
+  transition: transform 0.25s, opacity 0.25s;
+}
+.nav-toggle-activo .nav-toggle-barra:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle-activo .nav-toggle-barra:nth-child(2) { opacity: 0; }
+.nav-toggle-activo .nav-toggle-barra:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ===== DRAWER DE NAVEGACIÓN · BASE = MÓVIL (panel fuera de pantalla) ===== */
+.nav-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 59;
+}
+nav {
+  position: fixed;
+  top: 0; right: 0;
+  height: 100vh;
+  width: min(78vw, 320px);
+  background: var(--carbon);
+  border-left: 1px solid var(--linea);
+  padding: var(--espacio-90) var(--espacio-28) var(--espacio-40);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  z-index: 60;
+  overflow-y: auto;
+}
+nav.nav-drawer-abierto { transform: translateX(0); }
+
+nav ul { list-style: none; display: flex; flex-direction: column; gap: var(--espacio-28); }
+nav a {
+  color: var(--ceniza); text-decoration: none; font-weight: var(--peso-medio);
+  text-transform: uppercase; font-size: 1.05rem; letter-spacing: 1px;
+  transition: color 0.2s;
+}
+nav a:hover, nav a[aria-current="page"] { color: var(--hueso); }
+
+/* evita que el fondo haga scroll mientras el drawer está abierto */
+body.nav-bloqueo-scroll { overflow: hidden; }
+
+/* ===== BOTONES (compartido) ===== */
+.btn {
+  display: inline-block; padding: var(--espacio-16) var(--espacio-34);
+  font-weight: var(--peso-fuerte); text-transform: uppercase; letter-spacing: 1px;
+  text-decoration: none; font-size: 0.95rem; cursor: pointer;
+  border: 2px solid var(--sangre); transition: all 0.2s;
+  font-family: inherit;
+}
+.btn-primario { background: var(--sangre); color: var(--hueso); }
+.btn-primario:hover { background: var(--sangre-osc); border-color: var(--sangre-osc); }
+.btn-fantasma { background: transparent; color: var(--hueso); }
+.btn-fantasma:hover { background: var(--sangre); }
+
+/* ===== CAMPO DE ARCHIVO (foto de perfil): label como botón primario redondeado ===== */
+/* El <input type="file"> nativo se oculta visualmente pero sigue enfocable
+   por teclado; el <label> asociado es el botón visible. */
+.input-archivo {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.btn-archivo {
+  border-radius: 999px;      /* píldora, como el wireframe */
+  align-self: flex-start;    /* ancho al contenido: el .campo es flex-column
+                                y por defecto estiraría el botón a todo el ancho */
+}
+/* El foco real vive en el input oculto: se refleja en el botón vía el
+   hermano adyacente, porque el label no recibe :focus-visible por sí solo. */
+.input-archivo:focus-visible + .btn-archivo {
+  outline: 3px solid var(--sangre);
+  outline-offset: 2px;
+}
+
+/* ===== FOOTER (compartido) · BASE = MÓVIL (una columna) ===== */
+footer {
+  background: var(--carbon); border-top: 2px solid var(--sangre);
+  padding: var(--espacio-60) 6vw var(--espacio-40);
+  display: grid; grid-template-columns: 1fr; gap: var(--espacio-40);
+}
+footer .marca-footer {
+  font-family: var(--fuente-titulo); text-transform: uppercase;
+  font-size: var(--texto-xl); margin-bottom: var(--espacio-12);
+}
+footer .marca-footer span { color: var(--sangre); }
+footer p { color: var(--ceniza); font-size: 0.9rem; max-width: 34ch; }
+footer h4 {
+  text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem;
+  margin-bottom: var(--espacio-16); color: var(--hueso);
+}
+footer ul { list-style: none; }
+footer ul li { margin-bottom: var(--espacio-10); }
+footer a { color: var(--ceniza); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+footer a:hover { color: var(--sangre); }
+.creditos {
+  grid-column: 1 / -1; border-top: 1px solid var(--linea);
+  padding-top: var(--espacio-24); margin-top: var(--espacio-20);
+  color: var(--ceniza); font-size: 0.82rem;
+}
+
+/* =========================================================
+   LANDING (index.html)
+   ========================================================= */
+
+/* ===== HERO · BASE = MÓVIL (una columna, altura natural) ===== */
+.hero {
+  min-height: auto;
+  display: grid;
+  grid-template-columns: 1fr;          /* móvil: texto arriba, imágenes abajo */
+  align-items: center;
+  gap: var(--espacio-40);
+  padding: var(--espacio-40) 6vw var(--espacio-60);
+  background:
+    radial-gradient(circle at 20% 30%, rgba(193,18,31,0.18), transparent 45%),
+    var(--negro);
+  border-bottom: 2px solid var(--sangre);
+}
+.hero-texto { display: flex; flex-direction: column; align-items: flex-start; }
+
+/* ===== CARRUSEL DEL HERO · BASE = MÓVIL ===== */
+.hero-carrusel {
+  position: relative;
+  width: 100%;
+  height: 45vh;              /* móvil: más bajo para no empujar el contenido */
+  max-height: 620px;
+  margin-top: var(--espacio-20);
+}
+.hero-carrusel .slide {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border: 1px solid var(--linea);
+  border-bottom: 3px solid var(--sangre);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.hero-carrusel .slide.activa { opacity: 1; }
+.hero .eyebrow {
+  color: var(--sangre); font-weight: var(--peso-fuerte); letter-spacing: 3px;
+  text-transform: uppercase; font-size: 0.8rem; margin-bottom: var(--espacio-16);
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 12vw, 3rem);   /* móvil: título más contenido */
+  max-width: 15ch; margin-bottom: var(--espacio-20);
+}
+.hero h1 em { color: var(--sangre); font-style: normal; }
+.hero p {
+  color: var(--ceniza); font-size: 1.2rem;
+  max-width: 55ch; margin-bottom: var(--espacio-40);
+}
+.acciones { display: flex; gap: var(--espacio-18); flex-wrap: wrap; }
+
+/* ===== SECCIONES GENERALES DE LA LANDING · BASE = MÓVIL ===== */
+section { padding: var(--espacio-60) 6vw; }   /* móvil: menos aire vertical */
+.titulo-seccion { font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: var(--espacio-12); }
+.titulo-seccion span { color: var(--sangre); }
+.subtexto { color: var(--ceniza); max-width: 60ch; margin-bottom: var(--espacio-50); }
+
+/* ===== TERRITORIOS ===== */
+.territorios {
+  list-style: none;
+  display: grid;
+  /* auto-fit: crea tantas columnas como quepan; cada tarjeta mide mínimo 240px.
+     Ya es intrínsecamente responsive: en móvil baja a una sola columna sin
+     necesidad de media query. Se conserva igual en mobile-first. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: var(--espacio-20);
+}
+.territorio {
+  display: flex; flex-direction: column;
+  background: var(--carbon);
+  border: 1px solid var(--linea);
+  border-bottom: 3px solid var(--sangre);
+  padding: var(--espacio-30) var(--espacio-24);
+  text-decoration: none;
+  min-height: 200px;
+  transition: transform 0.2s, background 0.2s, border-color 0.2s;
+}
+.territorio:hover {
+  transform: translateY(-6px);
+  background: var(--carbon-claro);
+  border-bottom-color: var(--hueso);
+}
+.territorio .pais {
+  font-family: var(--fuente-titulo); text-transform: uppercase;
+  font-size: var(--texto-xl); letter-spacing: 1px; color: var(--hueso);
+  margin-bottom: var(--espacio-8);
+}
+.territorio .dato { color: var(--ceniza); font-size: 0.9rem; flex-grow: 1; }
+.territorio .cta-mini {
+  color: var(--sangre); font-weight: var(--peso-fuerte); text-transform: uppercase;
+  font-size: 0.8rem; letter-spacing: 1px; margin-top: var(--espacio-18);
+  white-space: nowrap;   /* mantiene "Ver peleadores →" en una sola línea */
+  transition: color 0.2s;
+}
+.territorio:hover .cta-mini { color: var(--hueso); }
+
+/* ===== ZONA DIVIDIDA: peleadores / scouts · BASE = MÓVIL (una columna) ===== */
+.publicos { display: grid; grid-template-columns: 1fr; gap: var(--espacio-28); }
+.publicos article {
+  background: var(--carbon); border: 1px solid var(--linea);
+  border-top: 3px solid var(--sangre);
+  padding: var(--espacio-40) var(--espacio-34);
+}
+.publicos h3 { font-size: 1.35rem; font-weight: var(--peso-fuerte); margin-bottom: var(--espacio-14); color: var(--hueso); }
+.publicos p { color: var(--ceniza); margin-bottom: 26px; }
+
+/* ===== TESTIMONIOS · BASE = MÓVIL (una columna) ===== */
+.testimonios {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: var(--espacio-20);
+}
+.testimonio {
+  display: flex; flex-direction: column;
+  background: var(--carbon);
+  border: 1px solid var(--linea);
+  border-bottom: 3px solid var(--sangre);
+  padding: var(--espacio-30) var(--espacio-24);
+}
+.testimonio blockquote { margin: 0 0 var(--espacio-20); }
+.testimonio blockquote p { color: var(--hueso); font-size: var(--texto-base); }
+.testimonio cite { display: flex; flex-direction: column; font-style: normal; }
+.testimonio-nombre {
+  font-family: var(--fuente-titulo); text-transform: uppercase;
+  font-size: 1.1rem; letter-spacing: 1px; color: var(--hueso);
+}
+.testimonio-rol { color: var(--sangre); font-size: 0.85rem; font-weight: var(--peso-fuerte); }
+
+/* ===== CÓMO FUNCIONA: 3 pasos · BASE = MÓVIL (apilados) ===== */
+.pasos { display: grid; grid-template-columns: 1fr; gap: var(--espacio-28); }
+.paso { border-left: 2px solid var(--sangre); padding-left: var(--espacio-22); }
+.paso .num {
+  font-family: var(--fuente-titulo); font-size: 3rem;
+  color: var(--sangre); line-height: 1;
+}
+.paso h3 { font-size: 1.05rem; font-weight: var(--peso-fuerte); margin: var(--espacio-8) 0; color: var(--hueso); }
+.paso p { color: var(--ceniza); font-size: 0.95rem; }
+
+/* ===== ANIMACIÓN: revelado al hacer scroll ===== */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s, transform 0.6s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* =========================================================
+   FORMULARIO (registro.html, registroScout.html)
+   ========================================================= */
+
+legend {
+  font-family: var(--fuente-cuerpo);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ===== ENCABEZADO DE PÁGINA · BASE = MÓVIL ===== */
+.page-head {
+  padding: var(--espacio-30) 6vw var(--espacio-30);   /* móvil: padding-top reducido */
+  border-bottom: 2px solid var(--sangre);
+  background:
+    radial-gradient(circle at 15% 30%, rgba(193,18,31,0.15), transparent 45%),
+    var(--negro);
+}
+.page-head .eyebrow {
+  color: var(--sangre); font-weight: var(--peso-fuerte); letter-spacing: 3px;
+  text-transform: uppercase; font-size: 0.8rem; margin-bottom: var(--espacio-12);
+}
+.page-head h1 { font-size: clamp(2rem, 6vw, 3.5rem); }
+.page-head p { color: var(--ceniza); max-width: 60ch; margin-top: var(--espacio-14); }
+
+/* ===== CONTENEDOR DEL FORMULARIO ===== */
+.form-wrap { padding: var(--espacio-50) 6vw var(--espacio-90); }
+form { max-width: 760px; margin: 0 auto; }
+
+/* botón volver: alineado con el formulario, grande y visible */
+.volver-wrap { max-width: 760px; margin: 0 auto var(--espacio-24); }
+.btn-volver {
+  display: inline-block;
+  background: var(--sangre);
+  color: var(--hueso);
+  text-decoration: none;
+  font-weight: var(--peso-fuerte);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: var(--texto-base);
+  padding: var(--espacio-14) var(--espacio-28);
+  border: 2px solid var(--sangre);
+  transition: all 0.2s;
+}
+.btn-volver:hover { background: transparent; color: var(--sangre); }
+
+/* ===== FIELDSET Y CAMPOS · BASE = MÓVIL ===== */
+fieldset {
+  border: 1px solid var(--linea);
+  border-top: 3px solid var(--sangre);
+  background: var(--carbon);
+  padding: var(--espacio-22) var(--espacio-18);        /* móvil: padding compacto */
+  margin-bottom: 32px;
+}
+legend {
+  color: var(--hueso); font-size: 1.1rem; font-weight: var(--peso-fuerte);
+  padding: 0 var(--espacio-12); margin-left: -12px;
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: 1fr;   /* móvil: un campo por fila */
+  gap: var(--espacio-22);
+  margin-top: var(--espacio-10);
+}
+.col-full { grid-column: 1 / -1; }
+
+.campo { display: flex; flex-direction: column; }
+.oculto { display: none !important;}
+label {
+  font-size: 0.9rem; font-weight: var(--peso-medio); margin-bottom: var(--espacio-8);
+  color: var(--hueso);
+}
+label .req { color: var(--sangre); }
+
+/* Grupos de checkboxes (idiomas, estilo de pelea, artes marciales): el
+   "campo" acá es el grupo entero, no un solo input — por eso el label es
+   un <span> (.grupo-label), no un <label for="">. */
+.campo-checkboxes { display: flex; flex-direction: column; gap: var(--espacio-8); }
+.grupo-label {
+  font-size: 0.9rem; font-weight: var(--peso-medio);
+  color: var(--hueso);
+}
+.grupo-label .req { color: var(--sangre); }
+.grupo-label .ayuda-inline { color: var(--ceniza); font-weight: var(--peso-normal); }
+
+.checkbox-opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-8) var(--espacio-16);
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  font-size: 0.9rem;
+  color: var(--hueso);
+  cursor: pointer;
+}
+/* la regla genérica "input, select, textarea" de abajo le pone fondo, borde
+   y padding de campo de texto — se resetea acá para que el checkbox se vea
+   como checkbox nativo, no como un input de texto deforme. */
+.checkbox-item input[type="checkbox"] {
+  all: revert;
+  cursor: pointer;
+}
+
+/* Logros y títulos: cada fila es un bloque propio, con el mismo acento
+   vertical que los fieldsets, para distinguir un logro de otro cuando hay
+   varios seguidos. */
+.logro-fila {
+  border: 1px solid var(--linea);
+  border-left: 3px solid var(--sangre);
+  padding: var(--espacio-16);
+  margin-bottom: var(--espacio-16);
+}
+.logro-fila .btn {
+  margin-top: var(--espacio-8);
+}
+
+/* Estado lectura (logro ya guardado): el acento izquierdo pasa de rojo a
+   verde (--exito, el mismo tono que ya usa el check de :valid) para marcar
+   de un vistazo que esa fila está completa, distinto de las que siguen
+   abiertas en edición. */
+.logro-fila-guardado {
+  border-left-color: var(--exito);
+}
+
+.logro-fila-acciones {
+  display: flex;
+  gap: var(--espacio-8);
+  flex-wrap: wrap;
+}
+
+/* Resumen de 3 líneas del estado lectura: jerarquía tipográfica en vez del
+   formulario completo — título destacado, luego metadatos tenues, luego la
+   descripción (más tenue y chica todavía, y solo si existe). */
+.logro-resumen-titulo {
+  color: var(--hueso);
+  font-weight: var(--peso-fuerte);
+  font-size: var(--texto-base);
+  margin: 0;
+}
+.logro-resumen-meta {
+  color: var(--ceniza);
+  font-size: var(--texto-sm);
+  margin: var(--espacio-4) 0 0;
+}
+.logro-resumen-descripcion {
+  color: var(--ceniza);
+  font-size: 0.8rem;
+  margin: var(--espacio-6) 0 0;
+}
+
+/* Editar / Borrar del estado lectura: más chicos que los botones de
+   acción principal del formulario — pesan menos porque actúan sobre un
+   logro ya guardado, no sobre el envío del formulario. Doble clase (no
+   ".btn-chico" sola) para tener más especificidad que ".btn" y así ganarle
+   su padding/font-size, igual que ".logro-fila .btn" ya le gana el margin. */
+.btn.btn-chico {
+  padding: var(--espacio-8) var(--espacio-16);
+  font-size: var(--texto-sm);
+}
+
+input, select, textarea {
+  background: var(--negro);
+  border: 1px solid var(--linea);
+  color: var(--hueso);
+  padding: var(--espacio-12) var(--espacio-14);
+  font-size: var(--texto-base);
+  font-family: inherit;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+/* espacio reservado para el ícono de :valid/:invalid, siempre — así el campo
+   no "salta" de tamaño cuando el ícono aparece o desaparece */
+input, textarea { padding-right: 42px; }
+
+input:focus, select:focus, textarea:focus { border-color: var(--sangre); outline: none; }
+textarea { resize: vertical; min-height: 110px; }
+
+/* El ícono nativo del calendario (type="date") es oscuro por defecto y
+   casi no se ve sobre el fondo negro. invert(0.8) lo aclara para que se
+   note dónde hacer clic; cursor pointer refuerza que es clicable. */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
+  cursor: pointer;
+}
+
+.ayuda { color: var(--ceniza); font-size: 0.8rem; margin-top: var(--espacio-6); }
+
+/* =========================================================
+   FEEDBACK VISUAL NATIVO: :valid / :invalid / :focus
+   El color nunca es la única pista: cada estado suma un ícono (círculo con
+   "!" para inválido, check para válido) además del borde/fondo. El mensaje
+   de texto sigue viviendo en su propio elemento (.error-campo, más abajo),
+   generado por TS — ahí solo delega la validez vía setCustomValidity(), el
+   color y el ícono los decide el CSS, nunca un classList.add() en JS.
+
+   No se marca en rojo antes de que el usuario escriba algo (:not(:placeholder-shown))
+   ni mientras sigue escribiendo (:not(:focus)) — solo al salir del campo.
+   ========================================================= */
+input:invalid:not(:placeholder-shown):not(:focus),
+textarea:invalid:not(:placeholder-shown):not(:focus) {
+  border-color: var(--sangre);
+  /* rgba en vez de var(--sangre): es el mismo rojo (#c1121f) con alfa 0.08,
+     como tinte de fondo — no hay token para eso sin color-mix(). */
+  background-color: rgba(193, 18, 31, 0.08);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='none' stroke='%23c1121f' stroke-width='1.5'/%3E%3Cline x1='8' y1='4.5' x2='8' y2='9' stroke='%23c1121f' stroke-width='1.5' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.5' r='0.9' fill='%23c1121f'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+
+input:valid:not(:placeholder-shown),
+textarea:valid:not(:placeholder-shown) {
+  border-color: var(--exito);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%233fae6a' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+
+textarea:invalid:not(:placeholder-shown):not(:focus),
+textarea:valid:not(:placeholder-shown) {
+  background-position: right 14px top 14px;   /* arriba, no centrado en un cuadro alto */
+}
+
+/* type="date" tampoco respeta :placeholder-shown (el navegador ignora el
+   atributo placeholder en este tipo de input, a diferencia de texto/número):
+   ":not(:placeholder-shown)" da siempre verdadero sin importar si el campo
+   tiene fecha o no, así que un date vacío y opcional (ej. lastFightDate) se
+   veía con el check verde de :valid puesto de entrada. El borde/fondo de
+   color se conservan igual (siguen siendo una pista real de validez) —
+   selectores más específicos que arriba, así que ganan sin depender del
+   orden; solo se les quita el ícono, mismo criterio que ya se usa con
+   <select> más abajo por el mismo motivo. */
+input[type="date"]:invalid:not(:placeholder-shown):not(:focus),
+input[type="date"]:valid:not(:placeholder-shown) {
+  background-image: none;
+}
+
+/* <select> no soporta :placeholder-shown (no aplica a ese elemento): se usa
+   :user-invalid/:user-valid, pensados justo para esto — solo se activan
+   después de que el usuario interactúa con el campo, no antes. Sin ícono
+   propio para no pelear con la flecha nativa del navegador; el color +
+   el mensaje de texto de abajo ya cubren la pista no-solo-color. */
+select:user-invalid:not(:focus) { border-color: var(--sangre); background-color: rgba(193, 18, 31, 0.08); }
+select:user-valid { border-color: var(--exito); }
+
+/* ===== VALIDACIÓN DE FORMULARIO (JS): solo el mensaje de texto y aria-* ===== */
+.error-campo { color: var(--sangre); font-size: 0.8rem; margin-top: var(--espacio-6); font-weight: var(--peso-medio); }
+.formulario-confirmacion {
+  color: var(--hueso);
+  background: var(--carbon);
+  border: 1px solid var(--linea);
+  border-left: 3px solid var(--sangre);
+  padding: var(--espacio-14) var(--espacio-18);
+  margin-bottom: var(--espacio-24);
+  font-size: 0.9rem;
+}
+
+/* móvil: los botones del formulario ocupan todo el ancho y apilan */
+.acciones-form { margin-top: var(--espacio-10); display: flex; gap: var(--espacio-16); flex-wrap: wrap; }
+.acciones-form .btn { width: 100%; text-align: center; }
+
+/* =========================================================
+   RESPONSIVE · MOBILE-FIRST (se construye HACIA ARRIBA con min-width)
+   Base ya cubierta arriba = móvil.
+   ≥480px  → teléfonos grandes / tablets pequeñas: recupera aire y tamaños.
+   ≥768px  → tablet horizontal / desktop: layouts multi-columna.
+   ========================================================= */
+
+/* ===== ≥ 480px : más espacio y tipografía a tamaño completo ===== */
+@media (min-width: 480px) {
+  .hero h1 { font-size: clamp(2.8rem, 8vw, 6rem); }
+  section { padding: var(--espacio-90) 6vw; }
+  .page-head { padding-top: var(--espacio-60); }
+  fieldset { padding: var(--espacio-30) var(--espacio-28); }
+  .acciones-form .btn { width: auto; text-align: center; }
+}
+
+/* ===== ≥ 768px : estructura de escritorio (varias columnas) ===== */
+@media (min-width: 768px) {
+  header { gap: 0; padding: var(--espacio-16) 6vw; }
+
+  /* la hamburguesa y el drawer ya no hacen falta: el nav vuelve a fluir en el header */
+  .nav-toggle, .nav-backdrop { display: none; }
+  nav {
+    position: static;
+    height: auto; width: auto;
+    background: transparent; border-left: 0;
+    padding: 0;
+    transform: none;
+    overflow: visible;
+  }
+  nav ul { flex-direction: row; gap: var(--espacio-28); flex-wrap: nowrap; }
+  nav a { font-size: 0.85rem; }
+
+  /* landing */
+  .hero {
+    grid-template-columns: 1fr 1fr;   /* texto | imágenes */
+    min-height: 100vh;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .hero-carrusel { height: 70vh; margin-top: 0; }
+  .publicos { grid-template-columns: 1fr 1fr; }
+  .pasos    { grid-template-columns: repeat(3, 1fr); }
+  footer    { grid-template-columns: 2fr 1fr 1fr; }
+
+  /* formulario: dos campos por fila */
+  .campos { grid-template-columns: 1fr 1fr; }
+}
+
+/* ===== Respeta a quien desactiva animaciones ===== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { transition: none; scroll-behavior: auto; }
+}
+
+/* ============================================================
+   PERFIL PÚBLICO DEL PELEADOR (perfil.html) · BASE = MÓVIL
+   ============================================================ */
+.perfil { max-width: 960px; margin: 0 auto; padding: var(--espacio-40) var(--espacio-22); }
+/* padding: 0 pisa la regla genérica "section { padding: var(--espacio-60) 6vw; }"
+   de más arriba (pensada para las secciones full-bleed de index.html): acá el
+   espaciado horizontal/vertical ya lo da .perfil (arriba) y margin-bottom
+   (abajo) — sin este reset, ambos paddings se sumarían y descuadrarían el
+   layout centrado y angosto de esta página. */
+.perfil > section { padding: 0; margin-bottom: var(--espacio-50); }
+
+/* Hero */
+.perfil-hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--espacio-30); }
+.perfil-hero-id { display: flex; flex-direction: column; align-items: center; gap: var(--espacio-20); }
+.perfil-foto { width: 160px; height: 160px; border-radius: 50%; object-fit: cover; border: 3px solid var(--sangre); }
+.perfil-hero h1 { font-family: var(--fuente-titulo); font-size: var(--texto-titulo); text-transform: uppercase; line-height: 1; margin: 0; }
+.perfil-hero h1 span { color: var(--sangre); }
+.perfil-apodo { color: var(--ceniza); font-style: italic; margin-top: var(--espacio-6); }
+.perfil-origen { color: var(--ceniza); font-size: var(--texto-sm); margin-top: var(--espacio-8); }
+.perfil-badges { display: flex; flex-wrap: wrap; gap: var(--espacio-8); justify-content: center; list-style: none; padding: 0; margin: var(--espacio-14) 0 0; }
+.badge { font-size: var(--texto-sm); font-weight: var(--peso-medio); text-transform: uppercase; letter-spacing: 0.5px; padding: var(--espacio-4) var(--espacio-14); border-radius: 999px; border: 1px solid var(--linea); background: var(--carbon); color: var(--hueso); }
+.badge-activo { border-color: var(--exito); color: var(--exito); }
+.badge-disponible { border-color: var(--sangre); background: var(--sangre); color: var(--hueso); }
+
+/* Récord (ahora vive en el hero, como <aside>) */
+.perfil-record { display: flex; flex-direction: column; align-items: center; gap: var(--espacio-16); }
+.record-marcador { display: flex; justify-content: center; gap: var(--espacio-30); margin: 0; }
+.record-cifra { display: flex; flex-direction: column; align-items: center; }
+.record-num { font-family: var(--fuente-titulo); font-size: 3rem; line-height: 1; color: var(--hueso); }
+.record-cifra:first-child .record-num { color: var(--sangre); }
+.record-lbl { font-size: var(--texto-sm); text-transform: uppercase; letter-spacing: 1px; color: var(--ceniza); margin-top: var(--espacio-6); }
+.record-metodos { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--espacio-12); list-style: none; padding: 0; margin: var(--espacio-24) 0 0; }
+.record-metodos li { background: var(--carbon); border: 1px solid var(--linea); border-radius: var(--border); padding: var(--espacio-8) var(--espacio-14); font-size: var(--texto-sm); color: var(--ceniza); }
+.record-metodos .metodo-num { color: var(--hueso); font-weight: var(--peso-fuerte); }
+
+/* Título discreto de sección (Ficha/Estilo/Palmarés) — reemplaza a
+   .titulo-seccion (el título enorme del landing) acá: el récord ya no lleva
+   título propio (vive en el hero), así que esto no le hace falta a nadie más. */
+.perfil-h2 {
+  font-family: var(--fuente-titulo);
+  font-size: var(--texto-xl);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--hueso);
+  border-left: 4px solid var(--sangre);
+  padding-left: var(--espacio-14);
+  margin: 0 0 var(--espacio-20);
+}
+
+/* Ficha técnica (dl) */
+.ficha-lista { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--linea); border: 1px solid var(--linea); border-radius: var(--border); overflow: hidden; margin-top: var(--espacio-24); }
+.ficha-lista > div { display: flex; justify-content: space-between; gap: var(--espacio-16); padding: var(--espacio-14) var(--espacio-18); background: var(--carbon); }
+.ficha-lista dt { color: var(--ceniza); font-size: var(--texto-sm); }
+.ficha-lista dd { margin: 0; text-align: right; color: var(--hueso); font-weight: var(--peso-medio); }
+.ficha-lista dd a { color: inherit; text-decoration: underline; text-underline-offset: 2px; transition: color 0.2s; }
+.ficha-lista dd a:hover { color: var(--sangre); }
+
+/* Contacto: la caja del correo (.ficha-lista) y el botón son dos cajas
+   separadas en la misma fila — el botón NO vive dentro del <dd>. stretch
+   para que el botón iguale la altura de la caja del correo. */
+.contacto-fila { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--espacio-16); margin-top: var(--espacio-24); }
+/* Nunca pasa a 2 columnas como el resto de .ficha-lista (@media más abajo):
+   esta solo tiene una fila, así que ese layout le sobra y le deja un hueco
+   vacío a la derecha del correo. Más específica que la regla del media query,
+   así que gana sin importar el orden. */
+.contacto-fila .ficha-lista { flex: 0 1 auto; margin-top: 0; grid-template-columns: 1fr; }
+.contacto-btn { display: flex; align-items: center; justify-content: center; text-align: center; }
+
+/* Estilo */
+.estilo-tags { display: flex; flex-wrap: wrap; gap: var(--espacio-8); margin-top: var(--espacio-14); }
+.tag { padding: var(--espacio-6) var(--espacio-16); border-radius: 999px; border: 1px solid var(--linea); background: var(--carbon); color: var(--hueso); font-size: var(--texto-sm); }
+.tag-estilo { background: var(--sangre); border-color: var(--sangre); text-transform: uppercase; font-weight: var(--peso-fuerte); letter-spacing: 0.5px; }
+.tags-label { color: var(--ceniza); font-size: var(--texto-sm); margin: var(--espacio-20) 0 0; }
+.perfil-bio { margin-top: var(--espacio-20); line-height: 1.6; color: var(--hueso); }
+
+/* Palmarés */
+.palmares-lista { list-style: none; padding: 0; margin: var(--espacio-24) 0 0; display: flex; flex-direction: column; gap: var(--espacio-16); }
+.logro { background: var(--carbon); border: 1px solid var(--linea); border-left: 3px solid var(--sangre); border-radius: var(--border); padding: var(--espacio-18) var(--espacio-20); }
+.logro-cab { display: flex; justify-content: space-between; align-items: baseline; gap: var(--espacio-12); }
+.logro-titulo { margin: 0; font-size: var(--texto-lg); color: var(--hueso); }
+.logro-anio { font-family: var(--fuente-titulo); font-size: var(--texto-lg); font-weight: var(--peso-fuerte); color: var(--sangre); }
+.logro-org { color: var(--ceniza); font-size: var(--texto-sm); margin: var(--espacio-6) 0 0; }
+.logro-desc { margin: var(--espacio-10) 0 0; line-height: 1.5; }
+
+/* ===== DESKTOP ===== */
+@media (min-width: 768px) {
+  .perfil-hero { flex-direction: row; justify-content: space-between; align-items: center; text-align: left; gap: var(--espacio-40); }
+  .perfil-hero-id { flex-direction: row; align-items: center; gap: var(--espacio-30); }
+  .perfil-foto { width: 190px; height: 190px; }
+  .perfil-badges { justify-content: flex-start; }
+  .perfil-record { align-items: flex-end; }
+  .record-metodos { justify-content: flex-end; }
+  .ficha-lista { grid-template-columns: 1fr 1fr; }
+}
+
+/* ===== BUSCAR PELEADORES (peleadores.html) · BASE = MÓVIL ===== */
+.buscar { max-width: 1100px; margin: 0 auto; padding: var(--espacio-30) var(--espacio-22); }
+/* Mismo reset que .perfil > section: pisa "section { padding: var(--espacio-60) 6vw; }"
+   (pensada para las secciones full-bleed del landing). Acá el espaciado lo da
+   .buscar; sin esto los dos paddings se suman y descuadran el layout. */
+.buscar section { padding: 0; }
+.buscar-disciplina { margin-bottom: var(--espacio-30); }
+.buscar-disciplina h1 { font-family: var(--fuente-titulo); text-transform: uppercase; font-size: var(--texto-titulo); margin: 0 0 var(--espacio-16); }
+.disciplina-toggle { display: flex; flex-wrap: wrap; align-items: center; gap: var(--espacio-12); }
+.disciplina-label { color: var(--ceniza); font-size: var(--texto-sm); }
+.chip-disciplina { font-family: inherit; font-weight: var(--peso-fuerte); text-transform: uppercase; letter-spacing: 1px; padding: var(--espacio-10) var(--espacio-22); border-radius: 999px; cursor: pointer; background: transparent; color: var(--hueso); border: 2px solid var(--sangre); transition: all 0.2s; }
+.chip-disciplina.is-activo { background: var(--sangre); }
+
+.buscar-layout { display: block; }
+@media (min-width: 900px) {
+  .buscar-layout { display: grid; grid-template-columns: 300px 1fr; gap: var(--espacio-30); align-items: start; }
+  .buscar-sidebar { position: sticky; top: var(--espacio-16); }
+}
+
+.buscar-sidebar { background: var(--carbon); border: 1px solid var(--linea); border-radius: var(--border); padding: var(--espacio-22); margin-bottom: var(--espacio-24); }
+.buscar-sidebar .perfil-h2 { margin-top: 0; }
+.filtro-grupo { margin-bottom: var(--espacio-20); }
+.filtro-grupo > label, .filtro-grupo > .grupo-label { display: block; margin-bottom: var(--espacio-8); color: var(--hueso); font-size: var(--texto-sm); font-weight: var(--peso-medio); }
+.filtro-grupo input[type="text"], .filtro-grupo input[type="number"] { width: 100%; }
+
+.busqueda-semantica { border: 2px solid var(--sangre); border-radius: var(--border); padding: var(--espacio-16); margin-bottom: var(--espacio-24); background: color-mix(in srgb, var(--sangre) 8%, var(--carbon)); }
+.busqueda-semantica label { display: block; font-weight: var(--peso-fuerte); text-transform: uppercase; letter-spacing: 0.5px; font-size: var(--texto-sm); margin-bottom: var(--espacio-8); }
+.busqueda-semantica textarea { width: 100%; resize: vertical; margin-bottom: var(--espacio-12); }
+.busqueda-semantica .btn-buscar { width: 100%; }
+
+.filtro-rango { display: flex; align-items: center; gap: var(--espacio-8); }
+
+.resultados-conteo { color: var(--ceniza); font-size: var(--texto-sm); margin: 0 0 var(--espacio-16); }
+.tarjetas-peleadores { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--espacio-16); }
+.tarjeta-peleador { display: flex; flex-direction: column; gap: var(--espacio-16); background: var(--carbon); border: 1px solid var(--linea); border-left: 3px solid var(--sangre); border-radius: var(--border); padding: var(--espacio-18); }
+.tarjeta-foto { width: 100%; height: 180px; object-fit: cover; border-radius: var(--border); }
+.tarjeta-info { flex: 1; min-width: 0; }
+.tarjeta-nombre { margin: 0 0 var(--espacio-4); font-weight: var(--peso-fuerte); font-size: var(--texto-lg); color: var(--hueso); }
+.tarjeta-meta { display: block; font-weight: var(--peso-normal); font-size: var(--texto-sm); color: var(--ceniza); text-transform: none; letter-spacing: 0; }
+.tarjeta-record { margin: 0 0 var(--espacio-10); color: var(--ceniza); font-size: var(--texto-sm); }
+.tarjeta-record strong { color: var(--hueso); font-family: var(--fuente-titulo); font-size: var(--texto-lg); }
+.tarjeta-acciones { display: flex; flex-wrap: wrap; gap: var(--espacio-10); }
+@media (min-width: 560px) {
+  .tarjeta-peleador { flex-direction: row; align-items: center; }
+  .tarjeta-foto { width: 110px; height: 110px; flex-shrink: 0; }
+  .tarjeta-acciones { flex-direction: column; }
+}
+
+/* El buscador no es un campo de formulario: sin check verde al escribir */
+.search-input input:valid:not(:placeholder-shown) {
+  border-color: var(--linea);
+  background-image: none;
+}
+
+.search-input input:valid:not(:placeholder-shown):focus {
+  border-color: var(--sangre);
+}
+
+.estado-vacio {
+  text-align: center;
+  padding: var(--espacio-30);
+  color: var(--ceniza);
+  border: 1px dashed var(--linea);
+  border-radius: var(--border);
+}
+
+.estado-vacio p {
+  margin: 0 0 var(--espacio-16);
+}
+
+.ficha-lista.fighter-detail {
+  grid-template-columns: 1fr;
+  margin-top: 0;
+}
+
+.fighter-detail-actions {
+  margin-top: var(--espacio-20);
+}
+
+
+/* ===== Modal de detalle (Mantine) con la identidad de FightScout ===== */
+.fs-modal-content,
+.fs-modal-header {
+  background: var(--carbon);
+}
+
+.fs-modal-content {
+  border: 1px solid var(--linea);
+}
+
+.fs-modal-header {
+  border-bottom: 1px solid var(--linea);
+}
+
+.fs-modal-title {
+  color: var(--hueso);
+  font-size: var(--texto-lg);
+}
+
+.fs-modal-close {
+  color: var(--hueso);
+}
+
+.fs-modal-close:hover {
+  background: var(--carbon-claro);
+}
+
+/* Compacta la ficha dentro del modal: menos aire que en la página de perfil */
+.ficha-lista.fighter-detail > div {
+  padding: var(--espacio-10) var(--espacio-14);
+}
+
+.aviso-demo {
+  color: var(--ceniza);
+  font-size: var(--texto-sm);
+}
