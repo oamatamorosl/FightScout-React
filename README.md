@@ -1,32 +1,27 @@
-# React + TypeScript + Vite
+# FightScout (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Buscador de luchadores de boxeo y MMA para reclutadores. Proyecto del bootcamp Full Stack de ESPOL.
 
-Currently, two official plugins are available:
+> Los perfiles son **datos de prueba** y no corresponden a personas reales. La búsqueda es **por texto** (nombre o apodo); no usa IA.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Qué hace
 
-## React Compiler
+- Muestra 3 luchadores ficticios.
+- Busca por nombre o apodo, sin distinguir mayúsculas. Una búsqueda vacía muestra todos.
+- Si no hay coincidencias, muestra un mensaje y un botón para limpiar la búsqueda.
+- "Ver detalle" abre el perfil completo del luchador; "Volver a resultados" conserva el texto buscado.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Cómo correrlo
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+pnpm install
+pnpm dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Stack
+
+React, TypeScript, Vite y pnpm.
+
+## Pendiente
+
+Búsqueda con IA, registro de perfiles, contacto y edición.
