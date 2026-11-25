@@ -6,7 +6,7 @@ export const fighters: Fighter[] = [
     name: 'Camila Ruiz',
     nickname: 'La Pantera',
     discipline: 'Boxeo',
-    weightKg: 58,
+    weightKg: "Hola",
     city: 'Quito',
     competitiveLevel: 'Profesional',
     competitiveStatus: 'Activo',
@@ -111,7 +111,7 @@ export const fighters: Fighter[] = [
   },
   {
     id: 3,
-    name: 'Mateo Mena',
+    name: 'Miguel Mena',
     nickname: 'Tormenta',
     discipline: 'Boxeo',
     weightKg: 66,
