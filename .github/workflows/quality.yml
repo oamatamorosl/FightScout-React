@@ -1,0 +1,37 @@
+name: Validación de calidad
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Preparar pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Validar calidad del código (lint)
+        run: pnpm run lint
+
+      - name: Compilar la aplicación
+        run: pnpm run build
+
+      - name: Guardar dist como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
