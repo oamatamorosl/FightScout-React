@@ -5,7 +5,7 @@ export function PublicLayout() {
     <>
       <header>
         <Link to="/search" className="marca">
-          Fight<span>Scout</span>
+          Fight<span>Scout</span>· Scouting LATAM
         </Link>
       </header>
       <main>
