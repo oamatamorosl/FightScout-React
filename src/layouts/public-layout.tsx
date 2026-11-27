@@ -11,6 +11,17 @@ export function PublicLayout() {
       <main>
         <Outlet />
       </main>
+      <footer>
+        <div>
+          <p className="marca-footer">
+            Fight<span>Scout</span>
+          </p>
+          <p>
+            Versión 2.0 · Análisis de scouting y búsqueda semántica con IA
+            (Gemini)
+          </p>
+        </div>
+      </footer>
     </>
   )
 }
