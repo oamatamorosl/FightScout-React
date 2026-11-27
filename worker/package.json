@@ -1,0 +1,14 @@
+{
+  "name": "fightscout-ai-worker",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Backend (Cloudflare Worker) que guarda la API key de Gemini y la usa para FightScout",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

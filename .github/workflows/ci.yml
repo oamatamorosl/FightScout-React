@@ -5,6 +5,8 @@ on:
     branches: ["**"]
   pull_request:
     branches: [main]
+  # Permite lanzar el workflow a mano desde la pestaña Actions (para el despliegue a S3)
+  workflow_dispatch:
 
 jobs:
   # ---------- JOB 1: INTEGRACIÓN CONTINUA ----------
@@ -27,19 +29,32 @@ jobs:
       - name: Instalar dependencias
         run: pnpm install --frozen-lockfile
 
-      - name: Compilar la aplicación
+      - name: Validar calidad del código (lint)
+        run: pnpm run lint
+
+      - name: Ejecutar pruebas
+        run: pnpm test
+
+      - name: Compilar la aplicación (incluye chequeo de tipos con tsc)
         run: pnpm run build
+        env:
+          # URL pública del Worker (variable del repo, NO secret). Sin ella, el build usa el simulador.
+          VITE_AI_API_URL: ${{ vars.VITE_AI_API_URL }}
 
       - name: Guardar el build como artefacto
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist
+          if-no-files-found: error
 
-  # ---------- JOB 2: DESPLIEGUE CONTINUO ----------
+  # ---------- JOB 2: DESPLIEGUE CONTINUO (opcional, solo manual) ----------
+  # Las credenciales de AWS Academy caducan en cada sesión del Learner Lab.
+  # Por eso este job NO corre en cada push: solo cuando lo lanzas a mano
+  # (Actions -> CI/CD -> Run workflow) después de actualizar los secrets.
   deploy:
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:

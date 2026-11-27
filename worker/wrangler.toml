@@ -1,0 +1,13 @@
+# Configuración del Worker de FightScout.
+# AQUÍ NO VA LA API KEY. La key se guarda como "secret" con:
+#   npx wrangler secret put GEMINI_API_KEY
+name = "fightscout-ai"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# Mismo modelo que usamos en clase (server.mjs del profe)
+GEMINI_MODEL = "gemini-3.5-flash-lite"
+# Páginas que pueden llamar a este Worker, separadas por coma.
+# Agrega aquí la URL de tu sitio en S3 cuando la tengas.
+ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:4173"

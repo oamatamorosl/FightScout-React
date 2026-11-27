@@ -890,3 +890,170 @@ select:user-valid { border-color: var(--exito); }
 html {
   color-scheme: dark;
 }
+
+/* ===== INTEGRACIÓN IA: análisis de scouting y búsqueda semántica ===== */
+.modo-busqueda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-10);
+  margin-bottom: var(--espacio-20);
+}
+
+.modo-busqueda .btn {
+  padding: var(--espacio-10) var(--espacio-20);
+}
+
+.ia-busqueda textarea {
+  width: 100%;
+  resize: vertical;
+  font-family: inherit;
+  font-size: var(--texto-base);
+  padding: var(--espacio-12);
+  background: var(--carbon);
+  color: var(--hueso);
+  border: 1px solid var(--linea);
+  border-radius: var(--border);
+}
+
+.ia-busqueda textarea:focus {
+  outline: none;
+  border-color: var(--sangre);
+}
+
+.ia-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-10);
+  margin-top: var(--espacio-12);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ".perfil > .ia-analisis" para ganarle a ".perfil > section { padding: 0 }" */
+.perfil > .ia-analisis {
+  padding: var(--espacio-24);
+  background: var(--carbon);
+  border: 1px solid var(--linea);
+  border-left: 3px solid var(--sangre);
+  border-radius: var(--border);
+}
+
+.ia-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-10);
+}
+
+.ia-sello {
+  font-size: var(--texto-sm);
+  color: var(--ceniza);
+  border: 1px solid var(--linea);
+  border-radius: 999px;
+  padding: var(--espacio-4) var(--espacio-12);
+}
+
+.ia-ayuda,
+.ia-cargando {
+  color: var(--ceniza);
+  margin: var(--espacio-16) 0;
+}
+
+.ia-cargando::before {
+  content: '⏳ ';
+}
+
+.ia-error {
+  margin: var(--espacio-16) 0;
+  padding: var(--espacio-14) var(--espacio-16);
+  border: 1px solid var(--semantic-error);
+  border-radius: var(--border);
+  color: var(--hueso);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.ia-error p {
+  margin: 0;
+}
+
+.ia-resultado {
+  margin: var(--espacio-16) 0 var(--espacio-24);
+}
+
+.ia-resumen {
+  color: var(--hueso);
+  font-size: var(--texto-lg);
+}
+
+.ia-nivel {
+  font-weight: var(--peso-fuerte);
+  text-transform: uppercase;
+}
+
+.ia-nivel-alta { color: var(--semantic-success); }
+.ia-nivel-media { color: var(--semantic-warning); }
+.ia-nivel-baja { color: var(--semantic-error); }
+
+.ia-columnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-20);
+}
+
+@media (min-width: 768px) {
+  .ia-columnas { grid-template-columns: 1fr 1fr; }
+}
+
+.ia-h3 {
+  margin: 0 0 var(--espacio-8);
+  font-size: var(--texto-base);
+  color: var(--hueso);
+}
+
+.ia-lista {
+  margin: 0;
+  padding-left: var(--espacio-20);
+  color: var(--ceniza);
+}
+
+.ia-lista li + li {
+  margin-top: var(--espacio-6);
+}
+
+.ia-recomendacion {
+  margin-top: var(--espacio-20);
+  color: var(--hueso);
+}
+
+.ia-ranking {
+  margin-top: var(--espacio-20);
+}
+
+.ia-coincidencia {
+  margin: var(--espacio-6) 0;
+  color: var(--hueso);
+  font-weight: var(--peso-fuerte);
+}
+
+.ia-checks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--texto-sm);
+}
+
+.ia-check-si { color: var(--semantic-success); }
+.ia-check-no { color: var(--ceniza); }
+
+/* El formulario de búsqueda IA ocupa todo el ancho (pisa "form { max-width; margin: auto }")
+   y no muestra el check verde de los formularios de registro */
+.ia-busqueda .ia-form { max-width: none; margin: 0 0 var(--espacio-20); }
+.ia-busqueda textarea:valid:not(:placeholder-shown) {
+  border-color: var(--linea);
+  background-image: none;
+}
+.ia-busqueda textarea:valid:not(:placeholder-shown):focus { border-color: var(--sangre); }
