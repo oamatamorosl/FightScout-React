@@ -5,6 +5,7 @@ import { ProfileAchievements } from './profile-achievements'
 import { ProfileHero } from './profile-hero'
 import { ProfileSpecs } from './profile-specs'
 import { ProfileStyle } from './profile-style'
+import { ScoutingAnalysis } from './scouting-analysis'
 
 type FighterProfileProps = {
   fighter: Fighter
@@ -23,6 +24,7 @@ export function FighterProfile(props: FighterProfileProps) {
       <ProfileHero fighter={fighter} />
       <ProfileSpecs fighter={fighter} />
       <ProfileStyle fighter={fighter} />
+      <ScoutingAnalysis key={fighter.id} fighter={fighter} />
       <ProfileAchievements achievements={fighter.achievements} />
     </div>
   )
